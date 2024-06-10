@@ -43,6 +43,24 @@ public class LootController : MonoBehaviour {
 		}
 
 		// instantiate and position items in world
-		
+		float dAngle = 360.0f / allItems.Count;
+		float angle = 0;
+		float radius = 1;
+
+		for (int i=0; i<allItems.Count; i++) {
+			angle += (dAngle + Random.Range(-dAngle/3, dAngle/3+1));
+
+			GameObject go = (GameObject)Object.Instantiate(allItems[i], GameObject.Find(WorldConstants.objName_world_items).transform);
+			go.transform.position = this.transform.position + Vector3.up * 5;
+			go.transform.Rotate(new Vector3(0, angle, 0));
+			go.transform.position += go.transform.forward * radius;
+
+			// add circular force
+			Vector3 force = go.transform.forward;
+			Rigidbody rb = go.GetComponentInChildren<Rigidbody>();
+			if (rb != null) {
+				rb.AddForce(go.transform.forward*10);
+			}
+		}
 	}
 }
