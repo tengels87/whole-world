@@ -79,7 +79,7 @@ public class Unit : MonoBehaviour {
 		//print("mouse: hit " + unitName);
 	}
 
-	public virtual void clicked() {
+	public virtual void clicked(CustomMouseManager mouseManager) {
 
 	}
 
