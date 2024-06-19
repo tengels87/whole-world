@@ -65,7 +65,7 @@ public class ItemUnit : Unit {
         }
     }
 
-    public override void clicked() {
+    public override void clicked(CustomMouseManager mouseManager) {
 
         // TEST: add item to inventory
         if (itemState == ItemUnit.ItemState.IN_WORLD) {
