@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerControls : MonoBehaviour {
-    public RPGCharacterController charController;
+    //public RPGCharacterController charController;
     public Transform targetItem;
 
     void Start() {
@@ -19,7 +19,7 @@ public class PlayerControls : MonoBehaviour {
     private void walkToMousePos() {
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, float.PositiveInfinity, LayerMask.GetMask("Terrain"))) {
-            charController.navMeshAgent.destination = hit.point;
+            //charController.navMeshAgent.destination = hit.point;
         }
     }
 }
