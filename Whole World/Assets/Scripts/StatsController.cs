@@ -29,6 +29,16 @@ public class StatsController : MonoBehaviour {
 
 	public void changeBaseStat(StatType stype, int val) {
 		baseStats.change(stype, val);
+
+		spawnHitText(val);
+
+		if (stype == StatType.HP) {
+			float hpFill = (float)baseStats.get(StatType.HP) / (float)baseStats.get(StatType.maxHP);
+
+			if (healthBarPrefab != null) {
+				showHealthBar(hpFill);
+			}
+		}
 	}
 
 	public void changeTempStat(StatType stype, int val) {
@@ -71,5 +81,34 @@ public class StatsController : MonoBehaviour {
 		}
 
 		return att;
+	}
+
+	private void spawnHitText(int val) {
+		if (statsEffectPrefab != null) {
+			GameObject go = (GameObject)Object.Instantiate(statsEffectPrefab);
+
+			go.transform.SetParent(WorldConstants.Instance.getMainCanvas().transform, false);
+
+			TextParticle mScript = go.GetComponent<TextParticle>();
+			string hitStr = "" + val;
+			Color color = Color.yellow;
+			if (val > 0) {
+				hitStr = "+" + hitStr;
+			} else {
+				color = Color.red;
+			}
+			mScript.init(hitStr, color, this.gameObject.transform.position);
+		}
+	}
+
+	private void showHealthBar(float fillAmount) {
+		if (this.healthBar == null) {
+			this.healthBar = (GameObject)Object.Instantiate(healthBarPrefab);
+			this.healthBar.transform.SetParent(WorldConstants.Instance.getMainCanvas().transform, false);
+		}
+
+		HealthBarController mScript = this.healthBar.GetComponent<HealthBarController>();
+		mScript.setFillAmount(fillAmount);
+		mScript.show(this.gameObject);
 	}
 }

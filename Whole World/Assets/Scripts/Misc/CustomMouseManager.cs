@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+using RPGCharacterAnims;
+
 public class CustomMouseManager : MonoBehaviour {
     public Camera mainCamera;
     public HighlightObject highlighter;
@@ -111,9 +113,61 @@ public class CustomMouseManager : MonoBehaviour {
 
     void LateUpdate() {
 
-        
+        // pickup item
+        if (collectTarget != null) {
+            if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) < 1.0f) {
+                RPGCharacterController charRPG = playerUnit.GetComponent<RPGCharacterController>();
+                if (charRPG != null) {
+                    if (charRPG.canAction && playerUnit.isMovementStopped()) {
+                        ItemUnit item = collectTarget;
+                        collectTarget = null;
+                        bool success = WorldConstants.Instance.getPlayerInventory().addItem(item);
+                        if (success) {
+                            //charRPG.Pickup();
 
-        
+                            if (onItemCollected != null)
+                                onItemCollected(item);
+                        }
+                    }
+
+                    playerUnit.stopMovement();
+                }
+            }
+        }
+
+        // attack plant, NPC
+        if (attackTarget != null) {
+
+            // show unit stats
+            hpImage.transform.parent.gameObject.SetActive(true);
+            hpImage.rectTransform.sizeDelta = new Vector2(128 * (attackTarget.statsController.getHPpercentage()), 32);
+            hpText.text = attackTarget.unitName;
+
+            if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) < 2.0f) {
+                moveTarget = playerUnit.gameObject.transform.position;
+                //playerUnit.stopMovement();
+
+                RPGCharacterController charRPG = playerUnit.GetComponent<RPGCharacterController>();
+                if (charRPG != null) {
+                    if (charRPG.canAction) {
+                        Unit unit = attackTarget;
+                        bool doAttack = playerUnit.Attack(unit);
+                        if (doAttack) {
+                            //charRPG.Attack(1);
+                        }
+
+                        // continue attacking until mouse button is released
+                        if (!Input.GetMouseButton(0) || unit.unitState == Unit.UnitState.DEAD) {
+                            attackTarget = null;
+                        }
+                    }
+                }
+            }
+        } else {
+
+            // hide unit stats
+            //hpImage.transform.parent.gameObject.SetActive(false);
+        }
     }
 
     public void setItems(ItemUnit[] items) {
