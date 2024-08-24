@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using RPGCharacterAnims;
+using RPGCharacterAnims.Lookups;
 
 public class CustomMouseManager : MonoBehaviour {
     public Camera mainCamera;
@@ -63,7 +64,7 @@ public class CustomMouseManager : MonoBehaviour {
 
             // move on terrain, collect, attack
             if (Input.GetMouseButtonDown(0)) {
-                LayerMask lmask = LayerMask.GetMask(new string[3] { "Terrain", "collectable", "attackable" });
+                LayerMask lmask = LayerMask.GetMask(new string[3] { "Walkable", "collectable", "attackable" });
                 if (Physics.Raycast(ray, out hit, float.PositiveInfinity, lmask)) {
                     if (((1 << hit.collider.gameObject.layer) & terrainLayer) != 0) {
                         //UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
@@ -113,12 +114,22 @@ public class CustomMouseManager : MonoBehaviour {
 
     void LateUpdate() {
 
+        // walk tp target destination
+        if (moveTarget != null) {
+            if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) > 2.0f) {
+                RPGCharacterController charRPG = playerUnit.GetComponentInChildren<RPGCharacterController>();
+                if (charRPG != null) {
+                    charRPG.StartAction(HandlerTypes.Navigation, moveTarget);
+                }
+            }
+        }
+
         // pickup item
         if (collectTarget != null) {
             if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) < 1.0f) {
                 RPGCharacterController charRPG = playerUnit.GetComponent<RPGCharacterController>();
                 if (charRPG != null) {
-                    if (charRPG.canAction && playerUnit.isMovementStopped()) {
+                    if (charRPG.canAction) {
                         ItemUnit item = collectTarget;
                         collectTarget = null;
                         bool success = WorldConstants.Instance.getPlayerInventory().addItem(item);
@@ -129,8 +140,6 @@ public class CustomMouseManager : MonoBehaviour {
                                 onItemCollected(item);
                         }
                     }
-
-                    playerUnit.stopMovement();
                 }
             }
         }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+using RPGCharacterAnims;
+
+
 public class NpcUnit : Unit {
 	public enum KIstate {
 		IDLE,
@@ -20,6 +23,7 @@ public class NpcUnit : Unit {
 		LEGS = 4
 	}
 	public KIstate kiState;
+	public float followDistance = 1f;
 	public ItemUnit[] equipment = new ItemUnit[5];
 
 	private NavMeshAgent agent;
@@ -38,21 +42,15 @@ public class NpcUnit : Unit {
 		agent = this.gameObject.GetComponent<NavMeshAgent>();
 		if (agent == null)
 			Debug.LogError(this.gameObject.name + ": NavMeshAgent Component not found");
+
+		// only use this agent to validate if a destination is reachable on the nav mesh
+		agent.isStopped = true;
 	}
 
 	public Vector3 setMoveTarget(Vector3 pos) {
 		agent.SetDestination(pos);
-		agent.isStopped = false;
 
 		return agent.destination;
-	}
-
-	public void stopMovement() {
-		agent.isStopped = true;
-	}
-
-	public bool isMovementStopped() {
-		return agent.isStopped;
 	}
 
 	public void setAttackTarget(Unit target) {
