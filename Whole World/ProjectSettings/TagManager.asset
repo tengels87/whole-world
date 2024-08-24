@@ -13,13 +13,13 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Terrain
   - 
   - TempCast
   - Walkable
-  - 
-  - 
-  - 
+  - selectable
+  - collectable
+  - attackable
   - 
   - 
   - 
