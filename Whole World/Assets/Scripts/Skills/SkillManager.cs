@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SkillManager : MonoBehaviour {
+    public Object skillSlot;
     public List<Skill> skillList = new List<Skill>();
 
     private GameObject[] skillSlots;
@@ -16,6 +17,7 @@ public class SkillManager : MonoBehaviour {
 
     void OnEnable() {
         foreach (Skill s in skillList) {
+            print(s.name);
             s.onSkillUnlocked += SkillUnlockedListener;
             s.onSkillLevelup += SkillLevelupListener;
         }
@@ -68,7 +70,7 @@ public class SkillManager : MonoBehaviour {
         RectTransform rect = this.gameObject.GetComponent<RectTransform>();
 
         for (int i = 0; i < skillList.Count; i++) {
-            skillSlots[i] = (GameObject)Object.Instantiate((GameObject)Resources.Load("Prefabs/UI/SkillSlot"));
+            skillSlots[i] = (GameObject)Object.Instantiate(skillSlot);
             skillSlots[i].transform.SetParent(this.transform, false);
             
             skillSlots[i].GetComponentsInChildren<Image>()[1].fillAmount = 0;

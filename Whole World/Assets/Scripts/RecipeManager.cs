@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public class RecipeManager : MonoBehaviour {
     public CustomMouseManager mouseManager;
     public InventoryManager inventoryManager;
+
+    public Object slotParentPrefab;
+    public Object slotPrefab;
+
     public List<Recipe> recipeList = new List<Recipe>();
 
     private recipeSlotUI[] recipeSlots;
@@ -61,7 +65,7 @@ public class RecipeManager : MonoBehaviour {
             tmpItemList.Add(recipeList[r].outcome);
 
             // slot GO (per recipe, parent for all ingredients)
-            recipeSlots[r].mainGO = (GameObject)Object.Instantiate((GameObject)Resources.Load("Prefabs/UI/RecipeSlotParent"));
+            recipeSlots[r].mainGO = (GameObject)Object.Instantiate(slotParentPrefab);
             recipeSlots[r].mainGO.name = "recipeGO_" + recipeList[r].outcome.unitName;
             recipeSlots[r].mainGO.transform.SetParent(this.transform, false);
             recipeSlots[r].ingredientsParent = recipeSlots[r].mainGO.GetComponentsInChildren<RectTransform>()[1].transform;
@@ -69,7 +73,7 @@ public class RecipeManager : MonoBehaviour {
             int index = 0;
 
             foreach (ItemUnit item in tmpItemList) {
-                GameObject ingreGO = (GameObject)Object.Instantiate((GameObject)Resources.Load("Prefabs/UI/RecipeSlot"));
+                GameObject ingreGO = (GameObject)Object.Instantiate(slotPrefab);
                 ingreGO.name = "ingreGO_r_" + recipeList[r].outcome.unitName + "_" + item.unitName;
                 ingreGO.transform.SetParent(recipeSlots[r].ingredientsParent, false);
 

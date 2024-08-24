@@ -12,6 +12,7 @@ public class InventoryManager : MonoBehaviour {
     public InventoryLayout layout;
     public int initialSlotCount = 9;
     public bool alwaysVisible = false;
+    public Object slotPrefab;
     public InventorySlot[] slots;
 
     private Image backdrop;
@@ -103,7 +104,7 @@ public class InventoryManager : MonoBehaviour {
 
     public void addSlots(int count) {
         for (int i = 0; i < count; i++) {
-            GameObject slot = (GameObject)Object.Instantiate((GameObject)Resources.Load("Prefabs/UI/InventorySlot"));
+            GameObject slot = (GameObject)Object.Instantiate(slotPrefab);
             slot.transform.SetParent(this.transform, false);
         }
     }
