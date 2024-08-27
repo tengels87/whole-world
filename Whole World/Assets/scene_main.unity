@@ -1738,6 +1738,38 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1643937236}
+    - target: {fileID: 114739187124406758, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugSetAnimator
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114739187124406758, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugWalkthrough
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114739187124406758, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugDoWeaponSwitch
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114739187124406758, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugWeaponVisibility
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114739187124406758, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugSwitchWeaponContext
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114979157038316788, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugSpheres
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114979157038316788, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugPushbackMesssages
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517427521858630766, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+      propertyPath: debugNavigation
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1885862585, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
@@ -1847,10 +1879,11 @@ MonoBehaviour:
   unitName: Player
   unitType: 6
   unitState: 0
-  mainGO: {fileID: 656769702}
+  mainGO: {fileID: 952415745}
   statsController: {fileID: 0}
   lootController: {fileID: 0}
   kiState: 0
+  followDistance: 1
   equipment:
   - {fileID: 0}
   - {fileID: 0}
@@ -2330,16 +2363,16 @@ MonoBehaviour:
     m_Bits: 512
   structureLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1024
   itemLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 2048
   plantLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 4096
   npcLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 4096
   selectableLayer:
     serializedVersion: 2
     m_Bits: 1024

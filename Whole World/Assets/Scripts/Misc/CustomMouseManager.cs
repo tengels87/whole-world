@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
+using RPGCharacterAnims.Actions;
 
 public class CustomMouseManager : MonoBehaviour {
     public Camera mainCamera;
@@ -25,6 +26,8 @@ public class CustomMouseManager : MonoBehaviour {
     public Tooltip cursorTooltip;
     public Tooltip worldTooltip;
 
+    private RPGCharacterController characterController;
+
     private Vector3 moveTarget;
     public ItemUnit collectTarget = null;
     public Unit attackTarget = null;
@@ -33,7 +36,9 @@ public class CustomMouseManager : MonoBehaviour {
     public event ItemCollectedEvent onItemCollected;
 
     void Awake() {
-
+        characterController = playerUnit.GetComponentInChildren<RPGCharacterController>();
+        if (characterController == null) {
+        }
     }
 
     void Start() {
@@ -42,7 +47,7 @@ public class CustomMouseManager : MonoBehaviour {
 
     void Update() {
 
-        // update position if mouse UI
+        // update position on mouse UI
         cursorTooltip.setPosition2D(Input.mousePosition);
         worldTooltip.setPosition2D(Input.mousePosition);
 
@@ -74,6 +79,7 @@ public class CustomMouseManager : MonoBehaviour {
                         attackTarget = null;
 
                         moveTarget = playerUnit.setMoveTarget(hit.point);
+                        characterController.StartAction(HandlerTypes.Navigation, moveTarget);
                         //}
                     } else if (((1 << hit.collider.gameObject.layer) & itemLayer) != 0) {
                         if (hit.collider.isTrigger) {
@@ -82,6 +88,7 @@ public class CustomMouseManager : MonoBehaviour {
                                 attackTarget = null;
                                 collectTarget = hitUnit;
                                 moveTarget = playerUnit.setMoveTarget(hit.point - (hit.point - playerUnit.gameObject.transform.position).normalized);
+                                characterController.StartAction(HandlerTypes.Navigation, moveTarget);
                             }
                         }
                     } else if (((1 << hit.collider.gameObject.layer) & plantLayer) != 0) {
@@ -91,6 +98,7 @@ public class CustomMouseManager : MonoBehaviour {
                                 collectTarget = null;
                                 attackTarget = hitUnit;
                                 moveTarget = playerUnit.setMoveTarget(hit.point - (hit.point - playerUnit.gameObject.transform.position).normalized);
+                                characterController.StartAction(HandlerTypes.Navigation, moveTarget);
                             }
                         }
                     }
@@ -110,39 +118,31 @@ public class CustomMouseManager : MonoBehaviour {
                 highlighter.setTarget(null);
             }
         }
-    }
-
-    void LateUpdate() {
-
-        // walk tp target destination
-        if (moveTarget != null) {
-            if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) > 2.0f) {
-                RPGCharacterController charRPG = playerUnit.GetComponentInChildren<RPGCharacterController>();
-                if (charRPG != null) {
-                    charRPG.StartAction(HandlerTypes.Navigation, moveTarget);
-                }
-            }
-        }
 
         // pickup item
         if (collectTarget != null) {
-            if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) < 1.0f) {
-                RPGCharacterController charRPG = playerUnit.GetComponent<RPGCharacterController>();
+            if (Vector3.Distance(playerUnit.mainGO.transform.position, moveTarget) < 1.0f) {
+                RPGCharacterController charRPG = playerUnit.GetComponentInChildren<RPGCharacterController>();
                 if (charRPG != null) {
-                    if (charRPG.canAction) {
-                        ItemUnit item = collectTarget;
-                        collectTarget = null;
-                        bool success = WorldConstants.Instance.getPlayerInventory().addItem(item);
-                        if (success) {
-                            //charRPG.Pickup();
+                    if (charRPG.HandlerExists(HandlerTypes.Attack)) {
+                        if (charRPG.CanStartAction(HandlerTypes.Attack)) {
+                            ItemUnit item = collectTarget;
+                            collectTarget = null;
+                            bool success = WorldConstants.Instance.getPlayerInventory().addItem(item);
+                            if (success) {
+                                charRPG.StartAction(HandlerTypes.Attack, new AttackContext("Attack", Side.Left));
 
-                            if (onItemCollected != null)
-                                onItemCollected(item);
+                                if (onItemCollected != null)
+                                    onItemCollected(item);
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    void LateUpdate() {
 
         // attack plant, NPC
         if (attackTarget != null) {
@@ -154,9 +154,9 @@ public class CustomMouseManager : MonoBehaviour {
 
             if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) < 2.0f) {
                 moveTarget = playerUnit.gameObject.transform.position;
-                //playerUnit.stopMovement();
+                characterController.StartAction(HandlerTypes.Navigation, moveTarget);
 
-                RPGCharacterController charRPG = playerUnit.GetComponent<RPGCharacterController>();
+                RPGCharacterController charRPG = playerUnit.GetComponentInChildren<RPGCharacterController>();
                 if (charRPG != null) {
                     if (charRPG.canAction) {
                         Unit unit = attackTarget;
