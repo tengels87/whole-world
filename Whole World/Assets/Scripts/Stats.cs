@@ -26,10 +26,14 @@ public class Stats {
 	public int[] values = new int[24];
 
 	public void init() {
-		values[(int)StatType.HP] = 5;
-		values[(int)StatType.maxHP] = values[(int)StatType.HP];
-		values[(int)StatType.level] = 1;
-		values[(int)StatType.maxEXP] = getMaxEXP();
+		set(StatType.level, 1);
+
+		set(StatType.HP, get(StatType.maxHP));
+		set(StatType.MP, get(StatType.maxMP));
+		set(StatType.maxEXP, getMaxEXP());
+		set(StatType.EXP, get(StatType.maxEXP));
+		set(StatType.hunger, get(StatType.maxHunger));
+		set(StatType.stamina, get(StatType.maxStamina));
 	}
 
 	public void set(StatType statType, int val) {

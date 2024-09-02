@@ -84,7 +84,7 @@ public class Unit : MonoBehaviour {
 	}
 
 	public virtual void hit(int val) {
-		statsController.changeBaseStat(StatType.HP, val);
+		statsController.changeBaseStat(StatType.HP, -val);
 
 		if (statsController.baseStats.get(StatType.HP) == 0) {
             kill();

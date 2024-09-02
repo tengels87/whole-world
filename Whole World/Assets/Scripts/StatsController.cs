@@ -16,7 +16,6 @@ public class StatsController : MonoBehaviour {
 
 	void Start() {
 		baseStats.init();
-		tempStats.init();
 
 		isReady = true;
 	}
