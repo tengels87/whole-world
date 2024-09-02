@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
 using RPGCharacterAnims.Actions;
+using UnityEngine.InputSystem.UI;
 
 public class CustomMouseManager : MonoBehaviour {
     public Camera mainCamera;
@@ -106,8 +107,8 @@ public class CustomMouseManager : MonoBehaviour {
             }
 
             // point on units and highlight them
-            if (Physics.Raycast(ray, out hit, float.PositiveInfinity, selectableLayer)) {
-                if (hit.collider.isTrigger) {
+            if (Physics.Raycast(ray, out hit, float.PositiveInfinity, itemLayer)) {
+                if (!hit.collider.isTrigger) {
                     Unit hitUnit = hit.transform.GetComponentInParent<Unit>();
                     if (hitUnit != null) {
                         highlighter.setTarget(hit.collider.gameObject);
@@ -140,9 +141,6 @@ public class CustomMouseManager : MonoBehaviour {
                 }
             }
         }
-    }
-
-    void LateUpdate() {
 
         // attack plant, NPC
         if (attackTarget != null) {
@@ -152,17 +150,28 @@ public class CustomMouseManager : MonoBehaviour {
             hpImage.rectTransform.sizeDelta = new Vector2(128 * (attackTarget.statsController.getHPpercentage()), 32);
             hpText.text = attackTarget.unitName;
 
-            if (Vector3.Distance(playerUnit.gameObject.transform.position, moveTarget) < 2.0f) {
-                moveTarget = playerUnit.gameObject.transform.position;
-                characterController.StartAction(HandlerTypes.Navigation, moveTarget);
+            if (Vector3.Distance(playerUnit.mainGO.transform.position, moveTarget) < 2.0f) {
+                moveTarget = playerUnit.mainGO.transform.position;
+                //characterController.StartAction(HandlerTypes.Navigation, moveTarget);
 
-                RPGCharacterController charRPG = playerUnit.GetComponentInChildren<RPGCharacterController>();
-                if (charRPG != null) {
-                    if (charRPG.canAction) {
+                if (characterController != null) {
+                    if (characterController.CanStartAction(HandlerTypes.Attack)) {
                         Unit unit = attackTarget;
                         bool doAttack = playerUnit.Attack(unit);
                         if (doAttack) {
-                            //charRPG.Attack(1);
+
+                            // Attack Left.
+                            if (characterController.leftWeapon == Weapon.Unarmed && characterController.rightWeapon == Weapon.Unarmed) {
+                                characterController.StartAction(HandlerTypes.Attack, new AttackContext("Attack", Side.Left));
+                            }
+                            // Attack Right.
+                            if (characterController.rightWeapon == Weapon.Unarmed && characterController.leftWeapon == Weapon.Unarmed) {
+                                characterController.StartAction(HandlerTypes.Attack, new AttackContext("Attack", Side.Right));
+                            }
+                            // TwoHanded Attack.
+                            if (characterController.hasTwoHandedWeapon) {
+                                characterController.StartAction(HandlerTypes.Attack, new AttackContext("Attack", Side.None));
+                            }
                         }
 
                         // continue attacking until mouse button is released
@@ -175,8 +184,12 @@ public class CustomMouseManager : MonoBehaviour {
         } else {
 
             // hide unit stats
-            //hpImage.transform.parent.gameObject.SetActive(false);
+            hpImage.transform.parent.gameObject.SetActive(false);
         }
+    }
+
+    void LateUpdate() {
+
     }
 
     public void setItems(ItemUnit[] items) {

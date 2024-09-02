@@ -127,10 +127,12 @@ public class NpcUnit : Unit {
 	public bool unequipItem(ItemUnit item) {
 		bool success = false;
 		for (int i = 0; i < equipment.Length; i++) {
-			if (equipment[i].Equals(item)) {
-				equipment[i] = null;
+			if (equipment[i] != null) {
+				if (equipment[i].Equals(item)) {
+					equipment[i] = null;
 
-				return true;
+					return true;
+				}
 			}
 		}
 
