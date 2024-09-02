@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public sealed class WorldConstants {
 	public static string objName_camera_main = "MainCamera";
+	public static string objName_player = "Player";
 	public static string objName_world = "World";
 	public static string objName_world_items = "World/Items";
 	public static string objName_canvas_main = "MainCanvas";
@@ -13,6 +14,7 @@ public sealed class WorldConstants {
 	public static string objName_skillmanager = "SkillManager";
 
 	public Camera cameraMain;
+	public NpcUnit player;
 	public Canvas canvasMain;
 	public InventoryManager playerInventory;
 	public CustomMouseManager mouseManager;
@@ -35,6 +37,14 @@ public sealed class WorldConstants {
 		}
 
 		return cameraMain;
+	}
+
+	public NpcUnit getPlayer() {
+		if (player == null) {
+			player = GameObject.Find(objName_player).GetComponent<NpcUnit>();
+		}
+
+		return player;
 	}
 
 	public Canvas getMainCanvas() {

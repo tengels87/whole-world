@@ -61,7 +61,7 @@ public class CustomMouseManager : MonoBehaviour {
             // drop item if appended to mouse
             if (Input.GetMouseButtonDown(1)) {
                 if (appendedItems.Count > 0) {
-                    if (Physics.Raycast(ray, out hit, 1000, terrainLayer)) {
+                    if (Physics.Raycast(ray, out hit, float.PositiveInfinity, terrainLayer)) {
                         ItemUnit lastItem = removeLastItem();
                         lastItem.drop(hit.point);
                     }

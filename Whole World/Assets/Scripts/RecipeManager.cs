@@ -93,8 +93,24 @@ public class RecipeManager : MonoBehaviour {
             // add listener for crafting
             int craftItemInd = r;
             recipeSlots[r].craftButton.onClick.AddListener(() => {
-                GameObject newOutcome = (GameObject)Object.Instantiate(recipeList[craftItemInd].outcome.gameObject, GameObject.Find(WorldConstants.objName_world_items).transform);
-                inventoryManager.addItem(newOutcome.GetComponent<ItemUnit>());
+
+                bool isCookable = recipeList[craftItemInd].checkIngredientsFull(inventoryManager.getItemsAll());
+                if (isCookable) {
+                    // remove ingredients from inventory
+                    foreach (ItemUnit ingredientIten in recipeList[craftItemInd].ingredientList) {
+                        inventoryManager.removeItemFromSlot(ingredientIten);
+                    }
+
+                    // spawn crafted item and add to inventory
+                    GameObject newOutcome = (GameObject)Object.Instantiate(recipeList[craftItemInd].outcome.gameObject, GameObject.Find(WorldConstants.objName_world_items).transform);
+                    ItemUnit craftedItem = newOutcome.GetComponent<ItemUnit>();
+                    bool canAddToInventory = inventoryManager.addItem(craftedItem);
+
+                    if (!canAddToInventory) {
+                        Vector3 dropPosition = WorldConstants.Instance.getPlayer().mainGO.transform.position;
+                        craftedItem.drop(dropPosition);
+                    }
+                }
             });
 
             recipeSlots[r].mainGO.SetActive(false);
@@ -141,10 +157,10 @@ public class RecipeManager : MonoBehaviour {
 
         updateGOitemsPosition();
 
-        isCookable();
+        updateCookable();
     }
 
-    private void isCookable() {
+    private void updateCookable() {
         for (int i = 0; i < recipeList.Count; i++) {
             if (recipeList[i].isUnlocked) {
                 bool isCookable = recipeList[i].checkIngredientsFull(inventoryManager.getItemsAll());

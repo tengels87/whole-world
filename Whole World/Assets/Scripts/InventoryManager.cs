@@ -86,10 +86,6 @@ public class InventoryManager : MonoBehaviour {
         return false;
     }
 
-    public void removeItem(ItemUnit item) {
-        // done in InventorySlot
-    }
-
     public List<ItemUnit> getItemsAll() {
         List<ItemUnit> retList = new List<ItemUnit>();
 
@@ -100,6 +96,18 @@ public class InventoryManager : MonoBehaviour {
         }
 
         return retList;
+    }
+
+    public void removeItemFromSlot(ItemUnit item) {
+        for (int i = 0; i < slots.Length; i++) {
+            if (slots[i].items.Count > 0) {
+                if (slots[i].items[0].unitName == item.unitName) {
+                    slots[i].removeItem();
+
+                    return;
+                }
+            }
+        }
     }
 
     public void addSlots(int count) {
