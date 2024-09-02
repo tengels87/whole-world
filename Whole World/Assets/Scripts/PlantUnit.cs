@@ -45,6 +45,10 @@ public class PlantUnit : Unit {
     public override void kill() {
         base.kill();
 
+		// drop loot
+		LootController lootController = this.GetComponent<LootController>();
+		lootController.dropItems();
+
         this.gameObject.SetActive(false);
 
     }

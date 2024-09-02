@@ -20,14 +20,15 @@ public class LootController : MonoBehaviour {
 	}
 
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.LeftControl))
-			dropItems();
+		// Test
+		//if (Input.GetKeyDown(KeyCode.LeftControl))
+		//	dropItems();
 	}
 
 	public void dropItems() {
 
 		// create final item list
-		List<Object> allItems = new List<Object>(primaryItems.Length + secondaryItems.Length + bonusSkillItems.Length);
+		List<Object> allItems = new List<Object>();
 
 		foreach (Object it in primaryItems) {
 			if (Random.value <= ProbabilityPrimItem)
