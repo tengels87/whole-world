@@ -213,4 +213,16 @@ public class CustomMouseManager : MonoBehaviour {
 
         return null;
     }
+
+    public static int GetValidPointerId(PointerEventData eventData) {
+        ExtendedPointerEventData extendedEventData = eventData as ExtendedPointerEventData;
+        switch (extendedEventData.pointerType) {
+            case UIPointerType.MouseOrPen:
+                return -(int)(extendedEventData.button + 1);    // -1, -2, -3
+            case UIPointerType.Touch:
+                return extendedEventData.touchId - 1;
+            default:
+                return -1;
+        }
+    }
 }

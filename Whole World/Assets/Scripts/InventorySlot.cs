@@ -88,9 +88,9 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             bool doUnequip = npc.unequipItem(item);
 
             // equip new
-            if (doUnequip) {
+            //if (doUnequip) {
                 npc.equipItem(item);
-            }
+            //}
 
             return false;
         } else if (item.itemType == ItemUnit.ItemType.FOOD ||
@@ -130,9 +130,10 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
 
     public void OnPointerClick(PointerEventData eventData) {
         GameObject clickedGO = eventData.pointerPress;
+        int pointerId = CustomMouseManager.GetValidPointerId(eventData);
 
         // arrange items in slot via mouse
-        if (eventData.pointerId == -1) {
+        if (pointerId == -1) {
             InventorySlot clickedSlot = clickedGO.GetComponentInParent<InventorySlot>();
 
             if (clickedSlot != null) {
@@ -172,7 +173,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         }
 
         // consume / equip item in slot (RMB)
-        if (eventData.pointerId == -2) {
+        if (pointerId == -2) {
             InventorySlot clickedSlot = clickedGO.GetComponentInChildren<InventorySlot>();
 
             if (clickedSlot != null) {
@@ -182,12 +183,14 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
                 // check if it's the one the player has
                 if (invManager != null) {
                     if (invManager == clickedSlot.gameObject.GetComponentInParent<InventoryManager>()) {
-                        bool doRemove = useItem(clickedSlot.items[0], mouseManager.playerUnit);
+                        if (clickedSlot.items.Count > 0) {  // only when there is an item in this slot
+                            bool doRemove = useItem(clickedSlot.items[0], mouseManager.playerUnit);
 
-                        if (doRemove) {
-                            ItemUnit rmvItem = removeItem();
-                            if (rmvItem != null) {
-                                Object.DestroyImmediate(rmvItem.gameObject);
+                            if (doRemove) {
+                                ItemUnit rmvItem = removeItem();
+                                if (rmvItem != null) {
+                                    Object.DestroyImmediate(rmvItem.gameObject);
+                                }
                             }
                         }
                     }
