@@ -240,7 +240,7 @@ namespace RPGCharacterAnims
             Unlock(true, true);
 
 			// Set Aim Input.
-			SetAimInput(target.transform.position);
+			//SetAimInput(target.transform.position);
 		}
 
 		#endregion

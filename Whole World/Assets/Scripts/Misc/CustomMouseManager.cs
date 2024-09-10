@@ -37,7 +37,7 @@ public class CustomMouseManager : MonoBehaviour {
     public event ItemCollectedEvent onItemCollected;
 
     void Awake() {
-        characterController = playerUnit.GetComponentInChildren<RPGCharacterController>();
+        characterController = playerUnit.GetComponentInParent<RPGCharacterController>();
         if (characterController == null) {
         }
     }
@@ -123,7 +123,7 @@ public class CustomMouseManager : MonoBehaviour {
         // pickup item
         if (collectTarget != null) {
             if (Vector3.Distance(playerUnit.mainGO.transform.position, moveTarget) < 1.0f) {
-                RPGCharacterController charRPG = playerUnit.GetComponentInChildren<RPGCharacterController>();
+                RPGCharacterController charRPG = playerUnit.GetComponentInParent<RPGCharacterController>();
                 if (charRPG != null) {
                     if (charRPG.HandlerExists(HandlerTypes.Attack)) {
                         if (charRPG.CanStartAction(HandlerTypes.Attack)) {
