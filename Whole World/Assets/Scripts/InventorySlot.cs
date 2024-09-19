@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
     public Image imageSlot;
     public Image imageBackdrop;
+    public Image imageHighlight;
     public List<ItemUnit> items = new List<ItemUnit>();
 
     private Text textCount;
@@ -15,12 +16,17 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
     void Awake() {
         imageSlot.sprite = imageBackdrop.sprite;
         textCount = this.gameObject.GetComponentInChildren<Text>();
+        imageHighlight.gameObject.SetActive(false);
 
         mouseManager = WorldConstants.Instance.getMouseManager();
     }
 
     void Update() {
 
+    }
+
+    public void highlightSlot(bool isHighlighted) {
+        imageHighlight.gameObject.SetActive(isHighlighted);
     }
 
     public void addItem(ItemUnit obj) {
@@ -79,24 +85,15 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         return null;
     }
 
-    public bool useItem(ItemUnit item, NpcUnit npc) {
+    public bool canComsumeItem(ItemUnit item) {
         if (item.itemType == ItemUnit.ItemType.AXE ||
             item.itemType == ItemUnit.ItemType.PICKAXE ||
             item.itemType == ItemUnit.ItemType.WEAPON_MELEE) {
-
-            // unequip old
-            bool doUnequip = npc.unequipItem(item);
-
-            // equip new
-            //if (doUnequip) {
-                npc.equipItem(item);
-            //}
 
             return false;
         } else if (item.itemType == ItemUnit.ItemType.FOOD ||
             item.itemType == ItemUnit.ItemType.POTION ||
             item.itemType == ItemUnit.ItemType.HERB) {
-            npc.consumeItem(item);
 
             return true;
         }
@@ -184,13 +181,37 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
                 if (invManager != null) {
                     if (invManager == clickedSlot.gameObject.GetComponentInParent<InventoryManager>()) {
                         if (clickedSlot.items.Count > 0) {  // only when there is an item in this slot
-                            bool doRemove = useItem(clickedSlot.items[0], mouseManager.playerUnit);
+                            bool doRemove = canComsumeItem(clickedSlot.items[0]);
 
-                            if (doRemove) {
+                            if (doRemove) { // consume it!
+                                mouseManager.playerUnit.consumeItem(clickedSlot.items[0]);
                                 ItemUnit rmvItem = removeItem();
                                 if (rmvItem != null) {
                                     Object.DestroyImmediate(rmvItem.gameObject);
                                 }
+                            } else {        // equip it!
+
+                                // unequip item of same type, if equipped
+                                ItemUnit _itemToUnequip = mouseManager.playerUnit.getItemAtBodypart(clickedSlot.items[0].bodyPart);
+                                if (_itemToUnequip != null) {
+                                    mouseManager.playerUnit.unequipItem(_itemToUnequip);
+
+                                    // update highlight visuals at Inventory>Slot
+                                    InventoryManager inventoryManager = this.GetComponentInParent<InventoryManager>();
+                                    if (inventoryManager != null) {
+                                        int slotIndex = inventoryManager.getSlotIndex(_itemToUnequip);
+                                        inventoryManager.setHighlightSlot(slotIndex, false);
+                                    }
+                                }
+
+                                // equip clicked item, if it is different from equipped item before
+                                if (_itemToUnequip == null || _itemToUnequip.unitName != clickedSlot.items[0].unitName) {
+                                    mouseManager.playerUnit.equipItem(clickedSlot.items[0]);
+                                    highlightSlot(true);
+                                }
+
+                                ItemUnit[] aaa = mouseManager.playerUnit.equipment;
+                                int bbb = 0;
                             }
                         }
                     }

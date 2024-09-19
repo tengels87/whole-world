@@ -23,7 +23,6 @@ public class InventoryManager : MonoBehaviour {
     private float margin = 16;
 
     void Start() {
-        addSlots(initialSlotCount);
         initSlots();
         positionSlots();
 
@@ -61,7 +60,6 @@ public class InventoryManager : MonoBehaviour {
 
     public bool addItem(ItemUnit obj) {
         int emptySlotIndex = -1; // first empty slot, used later when item not found in slots
-        int foundSlotIndex = -1; // item already exists in this slot
 
         for (int i = 0; i < slots.Length; i++) {
             if (slots[i].items.Count == 0) {
@@ -69,7 +67,6 @@ public class InventoryManager : MonoBehaviour {
                     emptySlotIndex = i;
             } else {
                 if (slots[i].items[0].unitName == obj.unitName) {
-                    foundSlotIndex = i;
                     slots[i].addItem(obj);
 
                     return true;
@@ -110,14 +107,31 @@ public class InventoryManager : MonoBehaviour {
         }
     }
 
-    public void addSlots(int count) {
-        for (int i = 0; i < count; i++) {
-            GameObject slot = (GameObject)Object.Instantiate(slotPrefab);
-            slot.transform.SetParent(this.transform, false);
+    public int getSlotIndex(ItemUnit item) {
+        for (int i = 0; i < slots.Length; i++) {
+            if (slots[i].items.Count > 0) {
+                if (slots[i].items[0].unitName == item.unitName) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    public void setHighlightSlot(int slotIndex, bool _highlight) {
+        if (slotIndex < slots.Length) {
+            slots[slotIndex].highlightSlot(_highlight);
         }
     }
 
     private void initSlots() {
+        for (int i = 0; i < initialSlotCount; i++) {
+            GameObject slot = (GameObject)Object.Instantiate(slotPrefab);
+            slot.transform.SetParent(this.transform, false);
+        }
+
+        // now find them and populate array of references
         slots = this.gameObject.GetComponentsInChildren<InventorySlot>();
 
         foreach (InventorySlot slot in slots) {

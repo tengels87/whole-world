@@ -24,7 +24,7 @@ public class NpcUnit : Unit {
 	}
 	public KIstate kiState;
 	public float followDistance = 1f;
-	public ItemUnit[] equipment = new ItemUnit[5];
+	public ItemUnit[] equipment = new ItemUnit[5];	// 5 bodyparts
 
 	private NavMeshAgent agent;
 
@@ -117,15 +117,10 @@ public class NpcUnit : Unit {
 	}
 
 	public void equipItem(ItemUnit item) {
-		if (item.itemType == ItemUnit.ItemType.AXE ||
-			item.itemType == ItemUnit.ItemType.PICKAXE ||
-			item.itemType == ItemUnit.ItemType.WEAPON_MELEE) {
-			equipment[(int)Bodyparts.ARM_RIGHT] = item;
-		}
+		equipment[(int)item.bodyPart] = item;
     }
 
 	public bool unequipItem(ItemUnit item) {
-		bool success = false;
 		for (int i = 0; i < equipment.Length; i++) {
 			if (equipment[i] != null) {
 				if (equipment[i].Equals(item)) {
@@ -136,6 +131,14 @@ public class NpcUnit : Unit {
 			}
 		}
 
-		return success;
+		return false;
+	}
+
+	public ItemUnit getItemAtBodypart(Bodyparts _bodypart) {
+		if (equipment[(int)_bodypart] != null) {
+			return equipment[(int)_bodypart];
+		}
+
+		return null;
 	}
 }
