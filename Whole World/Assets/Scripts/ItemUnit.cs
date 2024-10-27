@@ -35,7 +35,7 @@ public class ItemUnit : Unit {
     public string description;
     public ItemUnit.ItemState itemState;
     public ItemUnit.ItemType itemType;
-    public NpcUnit.Bodyparts bodyPart = NpcUnit.Bodyparts.ARM_LEFT;
+    public NpcUnit.Bodyparts bodyPart = NpcUnit.Bodyparts.ARM_RIGHT;
 
     public int actionValue = 0;
 

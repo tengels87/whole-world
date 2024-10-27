@@ -136,8 +136,8 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             if (clickedSlot != null) {
 
                 // get inventory manager (as parent of InventorxSlot)
-                // This way we can pick and arrange Items in every slot we can find
-                // (own inventory, corpse, treasure, ...)
+                // This way we can pick and arrange Items in every slot acress different inventories
+                // (own inventory, corpse, chest, ...)
                 InventoryManager invManager = this.gameObject.GetComponentInParent<InventoryManager>();
                 if (invManager != null) {
 
@@ -184,34 +184,38 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IPointerEnterH
                             bool doRemove = canComsumeItem(clickedSlot.items[0]);
 
                             if (doRemove) { // consume it!
-                                mouseManager.playerUnit.consumeItem(clickedSlot.items[0]);
+                                WorldConstants.Instance.getPlayer().consumeItem(clickedSlot.items[0]);
                                 ItemUnit rmvItem = removeItem();
                                 if (rmvItem != null) {
                                     Object.DestroyImmediate(rmvItem.gameObject);
                                 }
                             } else {        // equip it!
 
-                                // unequip item of same type, if equipped
-                                ItemUnit _itemToUnequip = mouseManager.playerUnit.getItemAtBodypart(clickedSlot.items[0].bodyPart);
-                                if (_itemToUnequip != null) {
-                                    mouseManager.playerUnit.unequipItem(_itemToUnequip);
+                                // check, if there is an item of same type already equipped on the same requested bodypart
+                                // save this info for later use
+                                ItemUnit _itemToUnequip = WorldConstants.Instance.getPlayer().getItemAtBodypart(clickedSlot.items[0].bodyPart);
 
-                                    // update highlight visuals at Inventory>Slot
-                                    InventoryManager inventoryManager = this.GetComponentInParent<InventoryManager>();
-                                    if (inventoryManager != null) {
-                                        int slotIndex = inventoryManager.getSlotIndex(_itemToUnequip);
-                                        inventoryManager.setHighlightSlot(slotIndex, false);
+
+                                // equip clicked item,
+                                // if its name is different from equipped item or if this itemType is not equipped currently
+                                // simply unequip if it is the same item (already equipped item click in inventory)
+                                if (_itemToUnequip == null || _itemToUnequip.unitName != clickedSlot.items[0].unitName) {
+                                    WorldConstants.Instance.getPlayer().equipItem(clickedSlot.items[0]);
+                                } else if (_itemToUnequip.unitName == clickedSlot.items[0].unitName) {
+                                    WorldConstants.Instance.getPlayer().unequipItem(_itemToUnequip);
+                                }
+
+                                // update highlight visuals on Inventory>Slot
+                                InventoryManager inventoryManager = this.GetComponentInParent<InventoryManager>();
+                                List<ItemUnit> playerItems = new List<ItemUnit>(WorldConstants.Instance.getPlayer().equipment);
+                                for (int i = 0; i < inventoryManager.slots.Length; i++) {
+                                    inventoryManager.setHighlightSlot(i, false);
+                                    if (inventoryManager.slots[i].items.Count > 0) {
+                                        if (playerItems.Contains(inventoryManager.slots[i].items[0])) {
+                                            inventoryManager.setHighlightSlot(i, true);
+                                        }
                                     }
                                 }
-
-                                // equip clicked item, if it is different from equipped item before
-                                if (_itemToUnequip == null || _itemToUnequip.unitName != clickedSlot.items[0].unitName) {
-                                    mouseManager.playerUnit.equipItem(clickedSlot.items[0]);
-                                    highlightSlot(true);
-                                }
-
-                                ItemUnit[] aaa = mouseManager.playerUnit.equipment;
-                                int bbb = 0;
                             }
                         }
                     }

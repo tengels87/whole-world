@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 using RPGCharacterAnims;
-
+using RPGCharacterAnims.Lookups;
 
 public class NpcUnit : Unit {
 	public enum KIstate {
@@ -27,6 +27,8 @@ public class NpcUnit : Unit {
 	public ItemUnit[] equipment = new ItemUnit[5];	// 5 bodyparts
 
 	private NavMeshAgent agent;
+	private RPGCharacterController characterController;
+
 
 	public override void Start() {
 		init();
@@ -42,6 +44,10 @@ public class NpcUnit : Unit {
 		agent = this.gameObject.GetComponent<NavMeshAgent>();
 		if (agent == null)
 			Debug.LogError(this.gameObject.name + ": NavMeshAgent Component not found");
+
+		characterController = this.gameObject.GetComponentInParent<RPGCharacterController>();
+		if (characterController == null)
+			Debug.LogError(this.gameObject.name  + ": RPGCharacterController Component not found");
 
 		// only use this agent to validate if a destination is reachable on the nav mesh
 		agent.isStopped = true;
@@ -118,6 +124,8 @@ public class NpcUnit : Unit {
 
 	public void equipItem(ItemUnit item) {
 		equipment[(int)item.bodyPart] = item;
+
+		animate_switchWeapon(Weapon.TwoHandSword);
     }
 
 	public bool unequipItem(ItemUnit item) {
@@ -125,6 +133,8 @@ public class NpcUnit : Unit {
 			if (equipment[i] != null) {
 				if (equipment[i].Equals(item)) {
 					equipment[i] = null;
+
+					animate_switchWeapon(Weapon.Unarmed);
 
 					return true;
 				}
@@ -140,5 +150,38 @@ public class NpcUnit : Unit {
 		}
 
 		return null;
+	}
+
+	private void animate_switchWeapon(Weapon weaponAnim) {
+		if (!characterController.HandlerExists(HandlerTypes.SwitchWeapon)) { return; }
+
+		var switchWeaponContext = new RPGCharacterAnims.Actions.SwitchWeaponContext();
+		bool doSwitch = false;
+
+		// Unarmed
+		if (weaponAnim == Weapon.Unarmed) {
+			if (characterController.rightWeapon != Weapon.Unarmed
+				|| characterController.leftWeapon != Weapon.Unarmed) {
+				doSwitch = true;
+
+				switchWeaponContext.type = "Switch";
+				switchWeaponContext.side = "Both";
+				switchWeaponContext.leftWeapon = Weapon.Unarmed;
+				switchWeaponContext.rightWeapon = Weapon.Unarmed;
+			}
+		} else {	// weapons
+			if (characterController.rightWeapon != weaponAnim) {
+				doSwitch = true;
+
+				switchWeaponContext.type = "Switch";
+				switchWeaponContext.side = "None";
+				switchWeaponContext.leftWeapon = Weapon.Unarmed;
+				switchWeaponContext.rightWeapon = weaponAnim;
+			}
+		}
+
+		if (doSwitch) {
+			characterController.TryStartAction(HandlerTypes.SwitchWeapon, switchWeaponContext);
+		}
 	}
 }

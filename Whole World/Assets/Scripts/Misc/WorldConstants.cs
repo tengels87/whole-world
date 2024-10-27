@@ -41,7 +41,7 @@ public sealed class WorldConstants {
 
 	public NpcUnit getPlayer() {
 		if (player == null) {
-			player = GameObject.Find(objName_player).GetComponent<NpcUnit>();
+			player = GameObject.Find(objName_player).GetComponentInChildren<NpcUnit>();
 		}
 
 		return player;
